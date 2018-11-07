@@ -1,0 +1,110 @@
+package applica.framework.management.csv;
+
+import junit.framework.Assert;
+import junit.framework.TestCase;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
+/**
+ * Applica
+ * User: Alberto Montemurro
+ * Date: 10/18/14
+ * Time: 10:58 AM
+ * To change this template use File | Settings | File Templates.
+ */
+public class CsvExporterTest extends TestCase {
+
+
+
+    String tempFolder;
+
+    @Before
+    public void setUp() throws Exception {
+
+        //creo una directory temporanea
+        TemporaryFolder folder = new TemporaryFolder();
+        tempFolder = folder.newFolder("test").getAbsolutePath();
+
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        FileUtils.deleteDirectory(new File(tempFolder));
+    }
+
+    @Test
+    public void testCsvExporter() throws Exception {
+
+        //qui testo l'esportazione a csv
+
+        //creo una lista ordinata delle headers
+        List<String> headers = new ArrayList<String>();
+        headers.add("Nome");
+        headers.add("Cognome");
+        headers.add("Data di nascita");
+        headers.add("Note");
+
+
+        //creo 2 riga sotto forma di hash table
+        Hashtable<String, String> person1 = new Hashtable<String, String>();
+        person1.put("Nome", "Francesco");
+        person1.put("Cognome", "Randazzo");
+        person1.put("Data di nascita", "14/07/1977");
+        person1.put("Note", "Francesco è un campione\n a bigliardino");
+
+
+        Hashtable<String, String> person2 = new Hashtable<String, String>();
+        person2.put("Nome", "Bruno");
+        person2.put("Cognome", "Fortunato");
+        person2.put("Data di nascita", "14/02/1983");
+        person2.put("Note", "Sono gaio;");
+
+        //creo la lista delle righe da inserire nel file
+        List<Hashtable<String, String>> persons = new ArrayList();
+        persons.add(person1);
+        persons.add(person2);
+
+        //creo il path del file da esportare
+        String fileName = tempFolder+ "/test.csv";
+
+
+        CsvExporter exp = new CsvExporter();
+        exp.generateCsvFile(fileName, persons,headers, ";");
+
+
+        //a questo punto posso leggere il file csv generato e verificare che non ha errori
+        CsvReader reader = new CsvReader(fileName, ";");
+        CsvInfo info = reader.readFile();
+
+        //adesso posso verificare le righe ottenute
+        RowData row1 = info.getImportedTableRows().get(0);
+        RowData row2 = info.getImportedTableRows().get(1);
+
+
+        assertEquals(row1.getData().get("Nome"), "Francesco");
+        assertEquals(row1.getData().get("Cognome"), "Randazzo");
+        assertEquals(row1.getData().get("Data di nascita"), "14/07/1977");
+        assertEquals(row1.getData().get("Note"), "Francesco è un campione a bigliardino"); //non ha lo \n
+
+
+        assertEquals(row2.getData().get("Nome"), "Bruno");
+        assertEquals(row2.getData().get("Cognome"), "Fortunato");
+        assertEquals(row2.getData().get("Data di nascita"), "14/02/1983");
+        assertEquals(row2.getData().get("Note"), "Sono gaio"); //non ha il ;
+
+    }
+
+
+
+
+
+}
