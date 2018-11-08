@@ -29,13 +29,20 @@ public class ExcelReader {
     String file;
     int firstRow = 0;
     int firstSheetNumber = 0;
+    int firstColumnNumber = 0;
     RowValidator validator;
 
     public ExcelReader(String file){
         this.file = file;
 
     }
-
+    public ExcelReader(String file, int firstSheetNumber, int firstRow, int firstColumnNumber, RowValidator validator){
+        this.file = file;
+        this.firstColumnNumber = firstColumnNumber;
+        this.firstSheetNumber = firstSheetNumber;
+        this.firstRow = firstRow;
+        this.validator = validator;
+    }
     public ExcelReader(String file, int firstSheetNumber, int firstRow, RowValidator validator){
         this.file = file;
 
@@ -168,7 +175,7 @@ public class ExcelReader {
         SimpleDateFormat f1 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
 
-        for (int cc = 0 ; cc < rowsize; cc++ ){
+        for (int cc = firstColumnNumber ; cc < rowsize + firstColumnNumber; cc++ ){
             Cell cell = row.getCell(cc, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             switch (cell.getCellType()) {
                 case Cell.CELL_TYPE_BLANK:
