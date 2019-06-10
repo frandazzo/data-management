@@ -29,9 +29,9 @@ public class MailMergeFacade {
      public MailMergeFacade(){
 
          //recupero dalle risorse il file di configuraizone di log4j per disabilitare il logging
-         URL url =  getClass().getResource("/log4j.properties");
-
-         PropertyConfigurator.configure(url.getPath());
+//         URL url =  getClass().getResource("/log4j.properties");
+//
+//         PropertyConfigurator.configure(url.getPath());
 
          merger = new DocxDocumentMergerAndPdfConverter();
      }
